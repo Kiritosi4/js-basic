@@ -1,13 +1,13 @@
 //Напишите функцию, которая проверяет, является ли число целым используя побитовые операторы
 function isInteger(n) {
-    return (num & 1) === 0;
+    return (n | 0) === n;
 }
 
 //Напишите функцию, которая возвращает массив четных чисел от 2 до 20 включительно
 function even() {
     const nums = [];
 
-    for (let i = 0; i <= 20; i+=2) {
+    for (let i = 2; i <= 20; i+=2) {
         nums.push(i);   
     }
 
@@ -48,7 +48,7 @@ function factorial(n) {
 
 //Напишите функцию, которая определяет, является ли число двойкой, возведенной в степень
 function isBinary(n) {
-    return (n > 0 || Number.isInteger(n)) && ((n & (n - 1)) === 0);
+    return (n & (n - 1)) === 0 && n > 0;
 }
 
 //Напишите функцию, которая находит N-е число Фибоначчи
@@ -99,7 +99,7 @@ function getOperationFn(initialValue, operatorFn) {
  * console.log(generator()); // 7
  * console.log(generator()); // 9
  */
-function sequence(start, step) {
+function sequence(start = 0, step = 1) {
     let currentValue = start;
 
     return function generator() {
@@ -124,33 +124,40 @@ function sequence(start, step) {
  * deepEqual({arr: [22, 33], text: 'text'}, {arr: [22, 3], text: 'text2'}) // false
  */
 function deepEqual(firstObject, secondObject) {
-     // Если оба объекта идентичны по ссылке, они равны
-    if (firstObject === secondObject) {
-        return true;
-    }
-
-    // Если типы объектов не совпадают, они не могут быть равны
-    if (typeof firstObject !== 'object' || typeof secondObject !== 'object') {
+    /*if (firstObject === NaN && secondObject === NaN){
         return false;
+    }*/
+
+    if (firstObject === secondObject) {
+        return true; // Если объекты идентичны по ссылке, они равны
     }
 
-    // Получаем ключи свойств объектов
+    if (
+    typeof firstObject !== 'object' ||
+    typeof secondObject !== 'object' ||
+    firstObject === null ||
+    secondObject === null
+    ) {
+        if (Number.isNaN(firstObject) && Number.isNaN(secondObject)) {
+            return true; // Если оба значения - NaN, они равны
+        }
+        
+        return firstObject === secondObject; // Если объекты разные по типу или один из них null, они не равны
+    }
+
     const keysFirst = Object.keys(firstObject);
     const keysSecond = Object.keys(secondObject);
 
-    // Если количество ключей разное, объекты не могут быть равны
     if (keysFirst.length !== keysSecond.length) {
-        return false;
+        return false; // Разное количество свойств - объекты не равны
     }
 
-    // Рекурсивно сравниваем значения свойств
     for (const key of keysFirst) {
         if (!deepEqual(firstObject[key], secondObject[key])) {
-        return false;
+            return false; // Рекурсивное сравнение свойств
         }
     }
 
-    // Если все проверки пройдены, объекты равны
     return true;
 }
 
